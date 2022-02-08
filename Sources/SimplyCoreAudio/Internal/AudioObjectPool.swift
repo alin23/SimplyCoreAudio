@@ -40,9 +40,10 @@ extension AudioObjectPool {
 
     @discardableResult
     func remove(_ id: AudioObjectID) -> Bool {
-        queue.asyncAfter(deadline: .now(), flags: .barrier) {
-            guard pool[id] != nil else { return false }
-            pool.removeValue(forKey: id) != nil
+        queue.asyncAfter(deadline: .now(), flags: .barrier) { [weak self] in
+            guard let self = self, self.pool[id] != nil else { return }
+            let _ = self.pool.removeValue(forKey: id)
         }
+        return true
     }
 }
